@@ -1,0 +1,35 @@
+Count and Display the Completed Task
+
+trigger Completedtask on Task (after insert,after update) {
+    
+    public integer result=0;
+    for(Task t: Trigger.New)
+    {
+        for(Account Acc:[select Id, Name from Account where Id=:t.AccountId])
+        {
+            for(List<Task> task1: [select Id, Status from task where whatid=:Acc.Id])
+            {
+                for(task t1:task1)
+                {
+                   
+                    if(t1.Status=='Completed'){
+            result = result+1;
+        }        
+                }
+                
+            }
+        }
+    }
+    public id accid;
+    List<Account> Acc1 = new List<Account>();
+    List<Account> a =[select id from Account where id=:accid];
+	for(Account a1:a)
+    {
+        a1.Account_Record__c = result;
+        Acc1.add(a1);
+    }
+    if(Acc1.size()>0){
+        update Acc1;
+    }
+    system.debug('Number Of Completed Task'+result); 
+}
